@@ -1,0 +1,80 @@
+
+#******************** Settings ************************
+
+*** Settings ***
+Documentation			User Registration Test. Validate GitLab registration page functionality with valid and invalid credentials.
+Suite Setup				Open Browser To Login Page
+Suite Teardown			Close All Browsers
+Tags					Registration
+
+#******************* Common Variables ********************
+
+*** Variables ***
+${REGISTER URL}			https://gitlab.com/users/sign_up
+${BROWSER}				chrome
+${EMPTY}
+
+#******************** Test Cases *************************
+
+*** Test Case ***
+
+# Positive Test Case: Register user with valid username, email, and password
+
+Register User With Valid Credentials
+	[Setup]				Open ${REGISTER URL}
+	Input Text			id=firstname		 John
+	Input Text			id=lastname			 Doe
+    Input Text         	id=username          testuser123
+    Input Text         	id=email             testuser123@example.com
+    Input Text         	id=password          ValidPassword123!
+    Click Button
+	Wait Until Page Shows Text "Varify your email"
+    [Teardown]         	Close ${BROWSER}
+
+# Negative Test Cases
+
+Register User With Duplicate Username
+    [Setup]				Open ${REGISTER URL}
+	Input Text			id=firstname		 Johnny
+	Input Text			id=lastname			 Doey
+    Input Text         	id=username          testuser123
+    Input Text         	id=email             newemail@example.com
+    Input Text         	id=password          NewPassword123!
+    Click Button
+    Wait Until Page Varifies Already Take Username
+    [Teardown]         	Close ${BROWSER}
+
+Register User With Empty Password
+    [Setup]				Open ${REGISTER URL}
+    Input Text			id=firstname		 John
+	Input Text			id=lastname			 Doe
+    Input Text         	id=username          testuser123
+    Input Text         	id=email             testuser123@example.com
+    Input Text  		id=password			 ${EMPTY}
+    Click Button
+    Wait Until Page Shows Text "Password can't be blank"
+    [Teardown]         	Close ${BROWSER}
+
+Register User With Invalid Email
+    [Setup]				Open ${REGISTER URL}
+	Input Text			id=firstname		 John
+	Input Text			id=lastname			 Doe
+    Input Text         	id=username          testuser123
+    Input Text         	id=email             invalidemail@example.com
+    Input Text         	id=password          ValidPassword123!
+    Click Button
+    Wait Until Page Shows Text "Email is invalid"
+    [Teardown]         	Close ${BROWSER}
+
+Register User Without Doing Recaptcha
+	[Setup]				Open ${REGISTER URL}
+	Input Text			id=firstname		 John
+	Input Text			id=lastname			 Doe
+    Input Text         	id=username          testuser123
+    Input Text         	id=email             testuser123@example.com
+    Input Text         	id=password          ValidPassword123!
+    Click Button
+	Wait Until Page Shows Recaptcha Page
+	Input Text			id=Recaptcha		 ${EMPTY}
+	Wait Until Page Shows Text "Recaptcha can't be blank"
+    [Teardown]         	Close ${BROWSER}

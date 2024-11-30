@@ -1,0 +1,56 @@
+
+#******************** Settings ************************
+
+*** Settings ***
+Documentation    Issue Test scenario: CRUD Operation - Create, Read, Update, Delete Issues.
+Suite Setup      Open Browser To Issue Page
+Suite Teardown   Close All Browsers
+Tags             Issues, TS-3-CRUD-Issues
+
+#******************* Common Variables ********************
+
+*** Variables ***
+${ISSUE URL}                 https://gitlab.com/projects/issues
+${BROWSER}                   chrome
+${EMPTY}
+${FIRST ISSUE NAME}          Bug Report 1
+${UPDATED ISSUE NAME}        Bug Report - Updated
+${DUPLICATE ISSUE NAME}      Bug Report - Updated
+
+#******************** Test Cases *************************
+
+*** Test Case ***
+
+# Positive Test Cases
+
+Create Issue
+    [Setup]                 Open ${ISSUE URL}
+    Input Text              id=issue_name_input        ${FIRST ISSUE NAME}
+    Input Text              id=issue_description_input Bug description goes here.
+    Click Button            id=create_issue_button
+    Wait Until Page Shows Text "Issue '${FIRST ISSUE NAME}' was successfully created."
+    [Teardown]              Close ${BROWSER}
+
+Update Name Of Issue
+    [Setup]                 Open ${ISSUE URL}
+    Select Existing Issue   ${FIRST ISSUE NAME}
+    Input Text              id=issue_name_input        ${UPDATED ISSUE NAME}
+    Click Button            id=update_issue_button
+    Wait Until Page Shows Text "Issue '${UPDATED ISSUE NAME}' was successfully updated."
+    [Teardown]              Close ${BROWSER}
+
+Create Second Issue With Previous Updated Name
+    [Setup]                 Open ${ISSUE URL}
+    Input Text              id=issue_name_input        ${DUPLICATE ISSUE NAME}
+    Input Text              id=issue_description_input Another bug report description.
+    Click Button            id=create_issue_button
+    Wait Until Page Shows Text "Issue '${DUPLICATE ISSUE NAME}' was successfully created."
+    [Teardown]              Close ${BROWSER}
+
+Delete First Issue
+    [Setup]                 Open ${ISSUE URL}
+    Select Existing Issue   ${UPDATED ISSUE NAME}
+    Click Button            id=delete_issue_button
+    Confirm Alert
+    Wait Until Page Shows Text "Issue '${UPDATED ISSUE NAME}' was successfully deleted."
+    [Teardown]              Close ${BROWSER}

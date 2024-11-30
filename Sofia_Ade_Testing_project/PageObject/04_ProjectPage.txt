@@ -1,0 +1,68 @@
+
+*** Settings ***
+Documentation     					Project Test Scenario: Validate CRUD Operations (Create, Read, Update, Delete) for Projects.
+Suite Setup       					Open Browser To Project Page
+Suite Teardown    					Close All Browsers
+Tags			  					Projects
+
+#******************* Common Variables ********************
+
+*** Variables ***
+${PROJECT URL}          			https://gitlab.com/projects/new
+${BROWSER}           				chrome
+
+#******************** Test Cases *************************
+
+*** Test Cases ***
+
+# Positive Test Cases
+
+Create Blank Project
+    [Setup]			   				Open ${PROJECT URL}
+    Input Text         				id=project_name_input          First Project
+    Click Button
+    Wait Until Page Contains Text "Project 'First Project' was successfully created."
+    [Teardown]         				Close ${BROWSER}
+
+Create Template Project
+    [Setup]			   				Open ${PROJECT URL}
+    Select From List By Value    	id=template_selector    	   sample_template
+    Input Text         				id=project_name_input          Template Project
+    Click Button
+    Wait Until Page Contains Text "Project 'Template Project' was successfully created."
+    [Teardown]         				Close ${BROWSER}
+
+Update Name Of Template Project
+    [Setup]			   				Open ${PROJECT URL}
+    Click Element      				"Template Project"
+    Click Edit Button
+    Input Text         				id=project_name_input          Updated Template Project
+    Click Element      				id=save_project_button
+    Wait Until Page Contains Text "Project 'Updated Template Project' was successfully updated."
+    [Teardown]         				Close ${BROWSER}
+
+Delete Template Project
+    [Setup]			   				Open ${PROJECT URL}
+    Click Element      				"Template Project"
+    Click Delete Button
+    Handle Alert       				ACCEPT
+    Wait Until Page Contains Text "Project 'Updated Template Project' was successfully deleted."
+    [Teardown]         				Close ${BROWSER}
+
+Validate Project Creation Message
+    [Setup]			   				Open ${PROJECT URL}
+    Input Text         				id=project_name_input          Valid Project
+    Click Button
+    Wait Until Page Contains Text "Project 'Valid Project' was successfully created."
+    [Teardown]         				Close ${BROWSER}
+
+# Negative Test Cases
+
+Create Blank Project With Duplicate Name
+    [Setup]			   				Open ${PROJECT URL}
+    Input Text         				id=project_name_input          First Project
+    Click Button
+    Wait Until Page Contains Text "Project name already taken. Please choose a different name."
+    [Teardown]         				Close ${BROWSER}
+
+
